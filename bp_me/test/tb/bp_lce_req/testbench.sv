@@ -154,6 +154,17 @@ module testbench
     end
   endtask
 
+  task automatic complete_blocking_request;
+    begin
+      @(negedge clk_i);
+      cache_req_done_i = 1'b1;
+      credit_return_i = 1'b1;
+      @(negedge clk_i);
+      cache_req_done_i = 1'b0;
+      credit_return_i = 1'b0;
+    end
+  endtask
+
   initial
     begin
       clk_i = 1'b0;
@@ -182,8 +193,16 @@ module testbench
 
       send_cache_request(e_miss_load, paddr_width_p'(64'h2000));
       expect_lce_request(e_bedrock_req_rd_miss, paddr_width_p'(64'h2000));
+      complete_blocking_request();
 
-      $display("[BSG-PASS] block clean drains and a following miss is issued");
+      send_cache_request(e_cache_bflush, paddr_width_p'(64'h3000));
+      expect_lce_request(e_bedrock_req_uc_wr, paddr_width_p'(64'h3000));
+
+      send_cache_request(e_miss_load, paddr_width_p'(64'h4000));
+      expect_lce_request(e_bedrock_req_rd_miss, paddr_width_p'(64'h4000));
+      complete_blocking_request();
+
+      $display("[BSG-PASS] block clean and flush drain before following misses");
       $finish;
     end
 
