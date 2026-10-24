@@ -1,0 +1,4 @@
+HDL_DEFINES += +define+BP_CFG_FLOWVAR=$(CFG)
+VV_BUILD_OPTS += --timing
+
+include $(BP_MK_DIR)/Makefile.params

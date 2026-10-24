@@ -1,0 +1,5 @@
+PROG := bclean_followed_by_miss
+SIM_PROG ?= $(PROG)
+BUILD_COLLATERAL += flist.vcs
+
+include $(BP_MK_DIR)/Makefile.collateral
